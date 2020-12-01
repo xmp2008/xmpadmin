@@ -1,0 +1,105 @@
+
+
+server:
+  port: 8080
+  servlet:
+    context-path: /demo
+
+
+
+
+logging:
+  level:
+    org.springframework.web: TRACE
+    cn.vpclub: DEBUG
+
+#spring:
+#  profiles:
+#    include:
+#      - web
+##      - swagger
+#      - cors
+#      - locale
+##      - hazelcast
+##      - kafka
+#      - logging
+#      - logging-file
+
+#debug: true可以通过日志看到哪些自动配置类是否生效
+debug: false
+
+
+app:
+  verbose-message: true
+
+locale:
+  aop-class: cn.xmp.moses.locale.aop.MessageAspectImpl
+  basenames:
+    - classpath:i18n/messages
+    - classpath:i18n/validatorMessages
+    - classpath:i18n/commonMessages
+
+spring:
+  profiles:
+    include:
+      - hazelcast #缓存
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    username: root
+    password: jgjuefAmFnWsufjnPr2rEVOUHHatA2+M34q4BUVIV1wcUCLL2CadDPGQU4j1Se5hRKw2g5wRTP2YTZBDrcldFA==
+    url: jdbc:mysql://localhost:3306/eladmin?serverTimezone=UTC&characterEncoding=utf8&useUnicode=true
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      max-active: 20
+      initial-size: 1
+      max-wait: 60000
+      min-idle: 1
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 'x' FROM DUAL
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      pool-prepared-statements: false
+      max-open-prepared-statements: 20
+      # encrypt password
+      filters: config,stat,wall,log4j
+      connection-properties: "config.decrypt=true;config.decrypt.key=${spring.datasource.druid.public-key};druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000"
+      use-global-data-source-stat: true
+      public-key: MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKK/mljTChrWlloeCrn5KmoVDIOUgm7V9q9WGsBsdMtDrFL9L1x6HKlKxrS+gIg0GNYDtDxx/Qrn2uGTtWmUl9MCAwEAAQ==
+      # WebStatFilter配置，说明请参考Druid Wiki，配置_配置WebStatFilter
+      web-stat-filter:
+        enabled: true #是否启用StatFilter默认值true
+        url-pattern: "/*"
+        exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid2/*"
+        session-stat-enable:
+        session-stat-max-count:
+        principal-session-name:
+        principal-cookie-name:
+        profile-enable:
+
+      # StatViewServlet配置，说明请参考Druid Wiki，配置_StatViewServlet配置
+      stat-view-servlet:
+        enabled: true #是否启用StatViewServlet默认值true
+        url-pattern: "/druid/*"
+        reset-enable: false
+        login-username: admin
+        login-password: admin321
+        allow: "127.0.0.1"
+        deny:
+
+shiro:
+  hash-iterations: 1 #加密迭代次数，强制设为至少1次（即使设置0或负数）
+  hash-algorithm-name: MD5 #加密算法名称，如：MD2/SHA-1/SHA-256/SHA-384/SHA-512
+  filter-chain-definitions: #默认为空，一般如下配置
+    /dataRerecord/**: authc
+    /getPermissions: authc
+    /**: illegalCharacterFilter
+  login-url: /login
+  unauthorizedUrl: /403
+  defaultViewUrl: /403
+  permission-package: cn.vpclub.mcs.data.rerecord.admin.web
+
+
