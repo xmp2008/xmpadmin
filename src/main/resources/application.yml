@@ -1,9 +1,7 @@
-
-
 server:
-  port: 8080
-  servlet:
-    context-path: /demo
+  port: 8081
+#  servlet:
+#    context-path: /demo
 
 
 
@@ -13,18 +11,6 @@ logging:
     org.springframework.web: TRACE
     cn.vpclub: DEBUG
 
-#spring:
-#  profiles:
-#    include:
-#      - web
-##      - swagger
-#      - cors
-#      - locale
-##      - hazelcast
-##      - kafka
-#      - logging
-#      - logging-file
-
 #debug: true可以通过日志看到哪些自动配置类是否生效
 debug: false
 
@@ -33,23 +19,24 @@ app:
   verbose-message: true
 
 locale:
-  aop-class: cn.xmp.moses.locale.aop.MessageAspectImpl
+  aop-class: cn.xmp.modules.common.locale.aop.MessageAspectImpl
   basenames:
     - classpath:i18n/messages
     - classpath:i18n/validatorMessages
     - classpath:i18n/commonMessages
 
 spring:
-  profiles:
-    include:
-      - hazelcast #缓存
-  main:
-    allow-bean-definition-overriding: true
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
     username: root
     password: jgjuefAmFnWsufjnPr2rEVOUHHatA2+M34q4BUVIV1wcUCLL2CadDPGQU4j1Se5hRKw2g5wRTP2YTZBDrcldFA==
     url: jdbc:mysql://localhost:3306/eladmin?serverTimezone=UTC&characterEncoding=utf8&useUnicode=true
+    #    driver-class-name: org.h2.Driver
+    #    schema: classpath:db/schema-h2.sql
+    #    data: classpath:db/data-h2.sql
+    #    url: jdbc:h2:mem:test
+    #    username: root
+    #    password: feWfCe78NpISxb59MP4fA1H6cMTrf0Qs7+WZsXBDqECxbhvb7q8+M8I6ZuuDMp8iOSOXpqyxwMQuJGGbTXnZaw==
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
       max-active: 20
@@ -69,6 +56,7 @@ spring:
       connection-properties: "config.decrypt=true;config.decrypt.key=${spring.datasource.druid.public-key};druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000"
       use-global-data-source-stat: true
       public-key: MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKK/mljTChrWlloeCrn5KmoVDIOUgm7V9q9WGsBsdMtDrFL9L1x6HKlKxrS+gIg0GNYDtDxx/Qrn2uGTtWmUl9MCAwEAAQ==
+      #      public-key: MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIgZn32Q2GSSvPSoGCjIjqimqbCgiZ15HQ4BUII53igtaVMo1lut9Hn7IdvAq6Nwg0AncBoLX5Q57ky0LjqysmUCAwEAAQ==
       # WebStatFilter配置，说明请参考Druid Wiki，配置_配置WebStatFilter
       web-stat-filter:
         enabled: true #是否启用StatFilter默认值true
@@ -89,17 +77,109 @@ spring:
         login-password: admin321
         allow: "127.0.0.1"
         deny:
-
+  redis:
+    # Redis数据库索引（默认为 0）
+    database: 0
+    # Redis服务器地址
+    host: 127.0.0.1
+    # Redis服务器连接端口
+    port: 6379
+    # Redis 密码
+    password:
+    lettuce:
+      pool:
+        # 连接池中的最小空闲连接
+        min-idle: 8
+        # 连接池中的最大空闲连接
+        max-idle: 500
+        # 连接池最大连接数（使用负值表示没有限制）
+        max-active: 2000
+        # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-wait: 10000
+    # 连接超时时间（毫秒）
+    timeout: 5000
+  main:
+    allow-bean-definition-overriding: true
 shiro:
+  cacheEnabled: true
+  credentialsEnabled: true #是否开启加密
   hash-iterations: 1 #加密迭代次数，强制设为至少1次（即使设置0或负数）
   hash-algorithm-name: MD5 #加密算法名称，如：MD2/SHA-1/SHA-256/SHA-384/SHA-512
   filter-chain-definitions: #默认为空，一般如下配置
-    /dataRerecord/**: authc
     /getPermissions: authc
-    /**: illegalCharacterFilter
-  login-url: /login
-  unauthorizedUrl: /403
-  defaultViewUrl: /403
-  permission-package: cn.vpclub.mcs.data.rerecord.admin.web
+#    /**: illegalCharacterFilter
+    /sysMenu/*: anon
+    /**: anon
+  login-url: /xmp/views/login
+  unauthorizedUrl: /xmp/views/error/403
+  defaultViewUrl: /xmp/views/error/403
+  permission-package: cn.xmp
+  realm-class: cn.xmp.modules.security.shiro.UserRealm
 
 
+
+# 登录相关配置
+login:
+  # 登录缓存
+  cache-enable: true
+  #  是否限制单用户登录
+  single: false
+  #  验证码
+  login-code:
+    #  验证码类型配置 查看 LoginProperties 类
+    code-type: arithmetic
+    #  登录图形验证码有效时间/分钟
+    expiration: 30
+    #  验证码高度
+    width: 111
+    #  验证码宽度
+    heigth: 36
+    # 内容长度
+    length: 2
+    # 字体名称，为空则使用默认字体
+    font-name:
+    # 字体大小
+    font-size: 25
+
+#jwt
+jwt:
+  header: Authorization
+  # 令牌前缀
+  token-start-with: Bearer
+  # 必须使用最少88位的Base64对该令牌进行编码
+  base64-secret: ZmQ0ZGI5NjQ0MDQwY2I4MjMxY2Y3ZmI3MjdhN2ZmMjNhODViOTg1ZGE0NTBjMGM4NDA5NzYxMjdjOWMwYWRmZTBlZjlhNGY3ZTg4Y2U3YTE1ODVkZDU5Y2Y3OGYwZWE1NzUzNWQ2YjFjZDc0NGMxZWU2MmQ3MjY1NzJmNTE0MzI=
+  # 令牌过期时间 此处单位/毫秒 ，默认4小时，可在此网站生成 https://www.convertworld.com/zh-hans/time/milliseconds.html
+  token-validity-in-seconds: 14400000
+  # 在线用户key
+  online-key: online-token-
+  # 验证码
+  code-key: code-key-
+  # token 续期检查时间范围（默认30分钟，单位毫秒），在token即将过期的一段时间内用户操作了，则给用户的token续期
+  detect: 1800000
+  # 续期时间范围，默认1小时，单位毫秒
+  renew: 3600000
+
+#密码加密传输，前端公钥加密，后端私钥解密
+rsa:
+  private_key: MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAIavK/A2Tu5MczP3um2pg+fyb51xEU+XNe1dOnepRX68GxroGXlmb/OQWJWzCyZMy6KHiyGALaU4vSrzVI9sDlm4g6O5caAuBtAhDeI1oREVRaGxksVrxb7EkGP+gIXaOuPc2RNytM1R0jTVZpPUbmXi0ihwh5On1pQLo83yE09bAgMBAAECgYBS+NuCspJRr/tQyo6pPEMsw2gLgDp/49GvFz4LtdZASzYPj2kSJw9U51oLby+xOqJA0GvgCY0VOi0fpqQzbwgvS+V6lEeTg1GnoRHU8PdLHjpErN478EPxSw/zTs9lxysTVRCVs4FEZrGCb8cKPgw1q1Z6i3hb6dg7YctH+hBxcQJBAMyaBOwtCYhjhqfo7TapH8Y/EgkUpnyO80LQ9LvFcspnR9yRSc9c6uaEBY5oL/p1oiEuyH7qvpZgz5PFWCdVDj0CQQCohL/M6W+IJWe2vdGilTRYg+YP7ecLURyZIxu5KHxw30XrLdYqr6C6x84aoywike7JkCnE4SasAfcuXPvz9IV3AkEAiwQnThV3wazmBFZ2PsqA5WFbLsJSMJWsYXy6nI6W5UFxiUNKZFOc401WvSC7YLDmnSc9YUa8gk57G8tdjzPyfQJAIRH0BcVlosUcZks34X0AScKQml2ocpsXTqIKJbrhONFICk/zcGsI0r61HpsY5SvYPWvyFnXMvgKgvFN5CjXZHwJAfQfIGONFEZN3r6j1jF3uRpD1QY+zeZH24xNFaA7k/vJQa6mUi5NpTYIsqzSn3KWDhwbZaIvJrTCo4P3l88CTNA==
+
+
+
+#hazelcast:
+#  enabled: true
+#  cluster: true
+#  servers:
+#    - 192.168.128.1:5701
+
+#mybatis:
+#  typeAliasesPackage: "cn.xmp.moses.entity"
+#  #checkConfig-location : false
+#  mapper-locations: "classpath:cn/xmp/moses/mapper/xml/*Mapper.xml"
+
+mybatis-plus:
+  mapper-locations: "classpath:cn/xmp/modules/system/mapper/xml/*Mapper.xml"
+  type-aliases-package: "cn.xmp.modules.system.entity"
+  global-config:
+    banner: false # 不打印mybatisplus的log
+    db-config:
+      select-strategy: not_empty
