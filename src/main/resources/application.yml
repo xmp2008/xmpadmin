@@ -8,9 +8,12 @@ server:
 
 logging:
   level:
-    org.springframework.web: TRACE
+#    org.springframework.web: TRACE
     cn.vpclub: DEBUG
-
+   #druid打印sql日志
+    druid:
+      sql:
+        Statement: DEBUG
 #debug: true可以通过日志看到哪些自动配置类是否生效
 debug: false
 
@@ -30,7 +33,7 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
     username: root
     password: jgjuefAmFnWsufjnPr2rEVOUHHatA2+M34q4BUVIV1wcUCLL2CadDPGQU4j1Se5hRKw2g5wRTP2YTZBDrcldFA==
-    url: jdbc:mysql://localhost:3306/eladmin?serverTimezone=UTC&characterEncoding=utf8&useUnicode=true
+    url: jdbc:mysql://127.0.0.1:3306/febs_base?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true
     #    driver-class-name: org.h2.Driver
     #    schema: classpath:db/schema-h2.sql
     #    data: classpath:db/data-h2.sql
@@ -39,6 +42,14 @@ spring:
     #    password: feWfCe78NpISxb59MP4fA1H6cMTrf0Qs7+WZsXBDqECxbhvb7q8+M8I6ZuuDMp8iOSOXpqyxwMQuJGGbTXnZaw==
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
+      filter:
+        slf4j:
+          enabled: true
+          statement-create-after-log-enabled: false
+          statement-log-enabled: true
+          statement-executable-sql-log-enable: true
+          statement-log-error-enabled: true
+          result-set-log-enabled: false
       max-active: 20
       initial-size: 1
       max-wait: 60000
@@ -52,7 +63,7 @@ spring:
       pool-prepared-statements: false
       max-open-prepared-statements: 20
       # encrypt password
-      filters: config,stat,wall,log4j
+      filters: config,stat,wall
       connection-properties: "config.decrypt=true;config.decrypt.key=${spring.datasource.druid.public-key};druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000"
       use-global-data-source-stat: true
       public-key: MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKK/mljTChrWlloeCrn5KmoVDIOUgm7V9q9WGsBsdMtDrFL9L1x6HKlKxrS+gIg0GNYDtDxx/Qrn2uGTtWmUl9MCAwEAAQ==
@@ -77,6 +88,8 @@ spring:
         login-password: admin321
         allow: "127.0.0.1"
         deny:
+
+
   redis:
     # Redis数据库索引（默认为 0）
     database: 0
@@ -101,20 +114,23 @@ spring:
   main:
     allow-bean-definition-overriding: true
 shiro:
-  cacheEnabled: true
+  shiroEnabled: true #是否开启shiro认证
+  jwtCredentialsMatcherEnabled: false #是否使用jwt认证，默认shiro密码认证
+  cacheEnabled: true #是否开启缓存
   credentialsEnabled: true #是否开启加密
   hash-iterations: 1 #加密迭代次数，强制设为至少1次（即使设置0或负数）
   hash-algorithm-name: MD5 #加密算法名称，如：MD2/SHA-1/SHA-256/SHA-384/SHA-512
+  retryMax: 5 # 密码重试次数，默认为5次
   filter-chain-definitions: #默认为空，一般如下配置
     /getPermissions: authc
-#    /**: illegalCharacterFilter
-    /sysMenu/*: anon
-    /**: anon
-  login-url: /xmp/views/login
-  unauthorizedUrl: /xmp/views/error/403
-  defaultViewUrl: /xmp/views/error/403
+    #    /**: illegalCharacterFilter
+#    /admin/sysMenu/*: authc
+  login-url: /login
+#  unauthorizedUrl: /403
+#  defaultViewUrl: /login
+#  successUrl: /index
   permission-package: cn.xmp
-  realm-class: cn.xmp.modules.security.shiro.UserRealm
+  realm-class: cn.xmp.modules.security.shiro.UserRealm #自定义Realm
 
 
 
@@ -140,24 +156,8 @@ login:
     font-name:
     # 字体大小
     font-size: 25
-
-#jwt
-jwt:
-  header: Authorization
-  # 令牌前缀
-  token-start-with: Bearer
-  # 必须使用最少88位的Base64对该令牌进行编码
-  base64-secret: ZmQ0ZGI5NjQ0MDQwY2I4MjMxY2Y3ZmI3MjdhN2ZmMjNhODViOTg1ZGE0NTBjMGM4NDA5NzYxMjdjOWMwYWRmZTBlZjlhNGY3ZTg4Y2U3YTE1ODVkZDU5Y2Y3OGYwZWE1NzUzNWQ2YjFjZDc0NGMxZWU2MmQ3MjY1NzJmNTE0MzI=
-  # 令牌过期时间 此处单位/毫秒 ，默认4小时，可在此网站生成 https://www.convertworld.com/zh-hans/time/milliseconds.html
-  token-validity-in-seconds: 14400000
-  # 在线用户key
-  online-key: online-token-
   # 验证码
   code-key: code-key-
-  # token 续期检查时间范围（默认30分钟，单位毫秒），在token即将过期的一段时间内用户操作了，则给用户的token续期
-  detect: 1800000
-  # 续期时间范围，默认1小时，单位毫秒
-  renew: 3600000
 
 #密码加密传输，前端公钥加密，后端私钥解密
 rsa:
@@ -180,6 +180,25 @@ mybatis-plus:
   mapper-locations: "classpath:cn/xmp/modules/system/mapper/xml/*Mapper.xml"
   type-aliases-package: "cn.xmp.modules.system.entity"
   global-config:
+    id-type: 2
     banner: false # 不打印mybatisplus的log
     db-config:
       select-strategy: not_empty
+
+
+# JWT
+xyjwt:
+  #请求头令牌名称
+  header:
+  #是否启用filter
+  enabled: false
+  #需要取消过滤的请求
+  requestUris:
+    - /getSmsVerificationCode
+    - /**/code
+    - /**/login
+
+cors:
+  mappings: /**
+  allowedOrigins:
+  allowCredentials: true

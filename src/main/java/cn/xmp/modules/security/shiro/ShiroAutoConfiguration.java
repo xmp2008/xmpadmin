@@ -98,7 +98,7 @@ public class ShiroAutoConfiguration {
         DefaultWebSecurityManager defaultWebSecurityManager = new DefaultWebSecurityManager();
         defaultWebSecurityManager.setRealm(realm());
         defaultWebSecurityManager.setSessionManager(sessionManager());
-        defaultWebSecurityManager.setCacheManager(cacheManager());
+//        defaultWebSecurityManager.setCacheManager(cacheManager());
         SecurityUtils.setSecurityManager(defaultWebSecurityManager);
         return defaultWebSecurityManager;
     }
@@ -121,12 +121,18 @@ public class ShiroAutoConfiguration {
 
     @Bean(name = "credentialsMatcher")
     public CredentialsMatcher credentialsMatcher() {
-        RetryLimitHashedCredentialsMatcher credentialsMatcher = new RetryLimitHashedCredentialsMatcher(
-                cacheManager());
-        credentialsMatcher.setHashAlgorithmName(properties.getHashAlgorithmName());
-        credentialsMatcher.setHashIterations(properties.getHashIterations());
-        credentialsMatcher.setStoredCredentialsHexEncoded(properties.isStoredCredentialsHexEncoded());
-        credentialsMatcher.setRetryMax(properties.getRetryMax());
+        RetryLimitHashedCredentialsMatcher credentialsMatcher = null;
+        if (properties.isJwtCredentialsMatcherEnabled()) {
+            //使用jwt认证
+            credentialsMatcher = new JwtCredentialsMatcher(cacheManager());
+        } else {
+            credentialsMatcher = new RetryLimitHashedCredentialsMatcher(
+                    cacheManager());
+            credentialsMatcher.setHashAlgorithmName(properties.getHashAlgorithmName());
+            credentialsMatcher.setHashIterations(properties.getHashIterations());
+            credentialsMatcher.setStoredCredentialsHexEncoded(properties.isStoredCredentialsHexEncoded());
+            credentialsMatcher.setRetryMax(properties.getRetryMax());
+        }
         return credentialsMatcher;
     }
 
@@ -208,10 +214,13 @@ public class ShiroAutoConfiguration {
             throws Exception {
         ShiroFilterFactoryBean shiroFilter = new ShiroFilterFactoryBean();
         shiroFilter.setSecurityManager(securityManager);
-        shiroFilter.setLoginUrl(AuthConstant.UNAUTHENTICATED_URL);
+//        shiroFilter.setLoginUrl(AuthConstant.UNAUTHENTICATED_URL);
+        shiroFilter.setLoginUrl(properties.getLoginUrl());
         shiroFilter.setSuccessUrl(properties.getSuccessUrl());
         shiroFilter.setUnauthorizedUrl(AuthConstant.UNAUTHORIZED_URL);
+
         Map<String, String> filterChains = new LinkedHashMap<>();
+
         if (properties.getFilterChainDefinitions() != null) {
             filterChains.putAll(properties.getFilterChainDefinitions());
             //添加authc for getPermissions method
@@ -233,10 +242,12 @@ public class ShiroAutoConfiguration {
             }
         }
         shiroFilter.setFilterChainDefinitionMap(filterChains);
+//        shiroFilter.setFilters(filterChains);
         //判断是否有illegalCharacterFilter要求
         if (CollectionUtils.isNotEmpty(filterChains.keySet()) && filterChains.containsValue("illegalCharacterFilter")) {
             shiroFilter.getFilters().put("illegalCharacterFilter", illegalCharacterFilter());
         }
+//        shiroFilter.getFilters().put("jwtFilter", jwtFilter());
 
         return shiroFilter;
     }
@@ -245,6 +256,11 @@ public class ShiroAutoConfiguration {
     public IllegalCharacterFilter illegalCharacterFilter() {
         return new IllegalCharacterFilter();
     }
+
+//    @Bean(name = "JwtFilter")
+//    public JwtFilter jwtFilter() {
+//        return new JwtFilter(new JwtTokenUtil(new JwtProperties()));
+//    }
 
     @Bean(name = "authcFilter")
     public AuthcFilter authcFilter() {

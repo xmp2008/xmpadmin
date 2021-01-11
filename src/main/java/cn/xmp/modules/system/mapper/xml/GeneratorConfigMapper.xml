@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.xmp.modules.system.mapper.GeneratorConfigMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.xmp.modules.system.entity.GeneratorConfig">
+        <id column="id" property="id" />
+        <result column="author" property="author" />
+        <result column="base_package" property="basePackage" />
+        <result column="entity_package" property="entityPackage" />
+        <result column="mapper_package" property="mapperPackage" />
+        <result column="mapper_xml_package" property="mapperXmlPackage" />
+        <result column="service_package" property="servicePackage" />
+        <result column="service_impl_package" property="serviceImplPackage" />
+        <result column="controller_package" property="controllerPackage" />
+        <result column="is_trim" property="isTrim" />
+        <result column="trim_value" property="trimValue" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, author, base_package AS basePackage, entity_package AS entityPackage, mapper_package AS mapperPackage, mapper_xml_package AS mapperXmlPackage, service_package AS servicePackage, service_impl_package AS serviceImplPackage, controller_package AS controllerPackage, is_trim AS isTrim, trim_value AS trimValue
+    </sql>
+
+</mapper>

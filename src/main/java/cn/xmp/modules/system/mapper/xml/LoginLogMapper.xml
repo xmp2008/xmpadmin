@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.xmp.modules.system.mapper.LoginLogMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.xmp.modules.system.entity.LoginLog">
+        <id column="ID" property="id" />
+        <result column="USERNAME" property="username" />
+        <result column="LOGIN_TIME" property="loginTime" />
+        <result column="LOCATION" property="location" />
+        <result column="IP" property="ip" />
+        <result column="SYSTEM" property="system" />
+        <result column="BROWSER" property="browser" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ID AS id, USERNAME AS username, LOGIN_TIME AS loginTime, LOCATION AS location, IP AS ip, SYSTEM AS system, BROWSER AS browser
+    </sql>
+
+</mapper>

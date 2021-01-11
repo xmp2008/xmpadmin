@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.xmp.modules.system.mapper.MenuMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.xmp.modules.system.entity.Menu">
+        <id column="MENU_ID" property="menuId" />
+        <result column="PARENT_ID" property="parentId" />
+        <result column="MENU_NAME" property="menuName" />
+        <result column="URL" property="url" />
+        <result column="PERMS" property="perms" />
+        <result column="ICON" property="icon" />
+        <result column="TYPE" property="type" />
+        <result column="ORDER_NUM" property="orderNum" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="MODIFY_TIME" property="modifyTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        MENU_ID AS menuId, PARENT_ID AS parentId, MENU_NAME AS menuName, URL AS url, PERMS AS perms, ICON AS icon, TYPE AS type, ORDER_NUM AS orderNum, CREATE_TIME AS createTime, MODIFY_TIME AS modifyTime
+    </sql>
+    <select id="findUserPermissions" resultMap="BaseResultMap">
+        SELECT
+        m.permission
+        FROM
+        t_role r
+        LEFT JOIN t_user_role ur ON (r.role_id = ur.role_id)
+        LEFT JOIN t_user u ON (u.user_id = ur.user_id)
+        LEFT JOIN t_role_menu rm ON (rm.role_id = r.role_id)
+        LEFT JOIN t_menu m ON (m.menu_id = rm.menu_id)
+        WHERE
+        u.username = #{username}
+        AND m.permission is not null
+        AND m.permission &lt;&gt; ''
+    </select>
+    <select id="findByRoleIdsAndTypeNot" parameterType="java.util.Set" resultMap="BaseResultMap">
+        SELECT
+        m.*
+        FROM
+        t_menu m, t_role_menu r
+        WHERE
+        m.menu_id = r.menu_id
+        AND
+        r.role_id
+        IN
+        <foreach collection="roleIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND
+        type != #{type}
+        order by m.ORDER_NUM asc
+    </select>
+</mapper>

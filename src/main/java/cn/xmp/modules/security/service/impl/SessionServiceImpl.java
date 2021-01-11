@@ -2,10 +2,10 @@ package cn.xmp.modules.security.service.impl;
 
 import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateUtil;
-import cn.xmp.modules.security.entity.ActiveUser;
-import cn.xmp.modules.system.entity.SysUser;
-import cn.xmp.modules.security.service.ISessionService;
 import cn.xmp.modules.common.utils.AddressUtil;
+import cn.xmp.modules.security.entity.ActiveUser;
+import cn.xmp.modules.security.service.ISessionService;
+import cn.xmp.modules.system.entity.User;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -42,14 +42,14 @@ public class SessionServiceImpl implements ISessionService {
         Collection<Session> sessions = sessionDAO.getActiveSessions();
         for (Session session : sessions) {
             ActiveUser activeUser = new ActiveUser();
-            SysUser user;
+            User user;
             SimplePrincipalCollection principalCollection;
             if (session.getAttribute(DefaultSubjectContext.PRINCIPALS_SESSION_KEY) == null) {
                 continue;
             } else {
                 principalCollection = (SimplePrincipalCollection) session
                         .getAttribute(DefaultSubjectContext.PRINCIPALS_SESSION_KEY);
-                user = (SysUser) principalCollection.getPrimaryPrincipal();
+                user = (User) principalCollection.getPrimaryPrincipal();
                 activeUser.setUsername(user.getUsername());
                 activeUser.setUserId(user.getUserId().toString());
             }
@@ -90,7 +90,7 @@ public class SessionServiceImpl implements ISessionService {
                 SimplePrincipalCollection simplePrincipalCollection = (SimplePrincipalCollection) session
                         .getAttribute(DefaultSubjectContext.PRINCIPALS_SESSION_KEY);
                 if (simplePrincipalCollection != null) {
-                    SysUser user = (SysUser) simplePrincipalCollection.getPrimaryPrincipal();
+                    User user = (User) simplePrincipalCollection.getPrimaryPrincipal();
                     if (userId.equals(user.getUserId())) {
                         collections.add(simplePrincipalCollection);
                     }

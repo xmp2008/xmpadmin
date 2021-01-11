@@ -15,6 +15,7 @@
  */
 package cn.xmp.modules.security.entity;
 
+import cn.xmp.modules.security.jwt.domain.UserDetails;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -24,7 +25,7 @@ import javax.validation.constraints.NotBlank;
  * @date 2018-11-30
  */
 @Data
-public class AuthUserDto {
+public class AuthUserDto extends UserDetails {
 
     @NotBlank
     private String username;

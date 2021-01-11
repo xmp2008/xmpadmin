@@ -19,8 +19,8 @@ import cn.xmp.modules.common.enums.ReturnCodeEnum;
 import cn.xmp.modules.common.model.response.BaseResponse;
 import cn.xmp.modules.common.utils.JsonUtil;
 import cn.xmp.modules.common.validator.AttributeValidatorException;
-import cn.xmp.modules.security.service.impl.AuthService;
 import cn.xmp.modules.security.entity.AuthUserDto;
+import cn.xmp.modules.security.service.impl.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.IncorrectCredentialsException;
@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.*;
  * @date 2018-11-23
  * 登录、授权
  */
+//@CrossOrigin
 @Slf4j
 @RestController
 @RequestMapping("/auth")
@@ -41,6 +42,7 @@ public class AuthorizationController {
 
     @Autowired
     AuthService authService;
+
 
     /**
      * 获取验证码
@@ -53,6 +55,7 @@ public class AuthorizationController {
         log.info("获取验证码API返回信息: {}", JsonUtil.objectToJson(response));
         return response;
     }
+
     @RequestMapping(path = "/login", method = RequestMethod.POST)
     @ResponseBody
     public BaseResponse login(@RequestBody AuthUserDto authUser) {
@@ -63,7 +66,7 @@ public class AuthorizationController {
             log.error("登录API异常: {}", e);
             response.setReturnCode(ReturnCodeEnum.CODE_1006.getCode());
             response.setMessage(e.getMessage());
-        }  catch (UnknownAccountException e) {//用户不存在
+        } catch (UnknownAccountException e) {//用户不存在
             log.error("登录API异常: {}", e);
             response.setReturnCode(ReturnCodeEnum.CODE_1006.getCode());
             response.setMessage("用户不存在");
@@ -71,8 +74,7 @@ public class AuthorizationController {
             log.error("登录API异常: {}", e);
             response.setReturnCode(ReturnCodeEnum.CODE_1006.getCode());
             response.setMessage("密码错误");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("登录API异常: {}", e);
             response.setReturnCode(ReturnCodeEnum.CODE_1004.getCode());
             response.setMessage(e.getMessage());
@@ -80,4 +82,6 @@ public class AuthorizationController {
         log.info("登录API返回信息: {}", JsonUtil.objectToJson(response));
         return response;
     }
+
+
 }

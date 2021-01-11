@@ -40,6 +40,10 @@ public class LoginProperties {
 
     private LoginCode loginCode;
     /**
+     * 验证码 key
+     */
+    private String codeKey;
+    /**
      * 用户登录信息缓存
      */
     private boolean cacheEnable;

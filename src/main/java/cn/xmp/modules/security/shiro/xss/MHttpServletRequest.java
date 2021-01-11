@@ -1,5 +1,8 @@
 package cn.xmp.modules.security.shiro.xss;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.context.request.RequestContextHolder;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import java.io.Serializable;
@@ -11,7 +14,8 @@ import java.io.Serializable;
  * Description (参数特殊字符过滤)
  * ProjectName spring-boot-starters
  */
-public class MHttpServletRequest extends HttpServletRequestWrapper implements Serializable{
+@Slf4j
+public class MHttpServletRequest extends HttpServletRequestWrapper implements Serializable {
 
     public MHttpServletRequest(HttpServletRequest request) {
         super(request);
@@ -19,6 +23,12 @@ public class MHttpServletRequest extends HttpServletRequestWrapper implements Se
 
     @Override
     public String getParameter(String name) {
+        String sessionId = RequestContextHolder.getRequestAttributes().getSessionId();
+        log.info("当前请求sessionId:{}", sessionId);
+//        Subject subject = SecurityUtils.getSubject();
+//        SysUser user = (SysUser) subject.getPrincipal();
+////            subject.logout();
+//        log.info("当前登录的用户:{}", user);
         // 返回值之前 先进行过滤
         System.out.println("name = [ 过滤 参数 " + name + "]");
         return XssShieldUtil.stripXss(super.getParameter(XssShieldUtil.stripXss(name)));
@@ -28,7 +38,7 @@ public class MHttpServletRequest extends HttpServletRequestWrapper implements Se
     public String[] getParameterValues(String name) {
         // 返回值之前 先进行过滤
         String[] values = super.getParameterValues(XssShieldUtil.stripXss(name));
-        if(values != null){
+        if (values != null) {
             for (int i = 0; i < values.length; i++) {
                 values[i] = XssShieldUtil.stripXss(values[i]);
             }

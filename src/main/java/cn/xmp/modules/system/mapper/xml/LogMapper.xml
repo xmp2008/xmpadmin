@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.xmp.modules.system.mapper.LogMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.xmp.modules.system.entity.Log">
+        <id column="ID" property="id" />
+        <result column="USERNAME" property="username" />
+        <result column="OPERATION" property="operation" />
+        <result column="TIME" property="time" />
+        <result column="METHOD" property="method" />
+        <result column="PARAMS" property="params" />
+        <result column="IP" property="ip" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="location" property="location" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ID AS id, USERNAME AS username, OPERATION AS operation, TIME AS time, METHOD AS method, PARAMS AS params, IP AS ip, CREATE_TIME AS createTime, location
+    </sql>
+
+</mapper>

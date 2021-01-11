@@ -33,9 +33,5 @@ public class ConfigBeanConfiguration {
         return new LoginProperties();
     }
 
-    @Bean
-    @ConfigurationProperties(prefix = "jwt", ignoreUnknownFields = true)
-    public SecurityProperties securityProperties() {
-        return new SecurityProperties();
-    }
+
 }

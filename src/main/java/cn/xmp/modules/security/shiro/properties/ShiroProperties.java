@@ -44,6 +44,10 @@ public class ShiroProperties {
     private boolean credentialsEnabled = false;
     //是否开启缓存
     private boolean cacheEnabled = true;
+    //是否开启shiro认证
+    private boolean shiroEnabled = true;
+    //是否使用jwt认证，默认shiro密码认证
+    private boolean jwtCredentialsMatcherEnabled = false;
 
     private String hashAlgorithmName = "MD5";
 

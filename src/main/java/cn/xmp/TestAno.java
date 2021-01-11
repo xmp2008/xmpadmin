@@ -1,6 +1,6 @@
 package cn.xmp;
 
-import cn.xmp.modules.system.entity.SysUser;
+import cn.xmp.modules.system.entity.User;
 
 import java.lang.annotation.*;
 import java.lang.reflect.InvocationTargetException;
@@ -53,11 +53,11 @@ public class TestAno {
         System.out.println(aClass1.hashCode());
         System.out.println(aClass2.hashCode());
         System.out.println(aClass3.hashCode());
-        Class<SysUser> sysUserClass = SysUser.class;
-        SysUser sysUser = new SysUser();
-        Class<? extends SysUser> aClass4 = sysUser.getClass();
+        Class<User> sysUserClass = User.class;
+        User sysUser = new User();
+        Class<? extends User> aClass4 = sysUser.getClass();
         Class<?> aClass5 = Class.forName("cn.xmp.modules.system.entity.SysUser");
-        SysUser sysUser1 = sysUserClass.newInstance();
+        User sysUser1 = sysUserClass.newInstance();
         System.out.println("sysUser1.getClass() = " + sysUser1.getClass());
         Class<Integer> type = Integer.TYPE;
         System.out.println("type = " + type);
@@ -114,3 +114,30 @@ public class TestAno {
     Class<?>[] basePackageClasses() default {};
 }
 
+interface A {
+    String f1();
+}
+
+interface B extends A {
+
+}
+
+class FU {
+    protected String getS() {
+        return "我是父类";
+    }
+}
+
+class ZI extends FU {
+    @Override
+    public String getS() {
+        return "我是子类";
+    }
+}
+
+class C {
+    public static void main(String[] args) {
+        FU zi = new ZI();
+        System.out.println("zi.getS() = " + zi.getS());
+    }
+}
