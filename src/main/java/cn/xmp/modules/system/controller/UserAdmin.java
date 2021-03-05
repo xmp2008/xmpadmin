@@ -98,6 +98,29 @@ public class UserAdmin {
 
     }
 
+    @RequestMapping(value = "/queryDetail", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseResponse queryDetail(@RequestBody UserRequest request) {
+        BaseResponse response;
+        //业务操作
+        log.info("query User : {}", request);
+        try {
+            User bean = new User();
+            BeanUtils.copyProperties(request, bean);
+            response = userService.findUserDetailList(bean);
+            User dataInfo = (User) response.getDataInfo();
+            dataInfo.setPassword("");
+            response.setDataInfo(dataInfo);
+            log.info("query User back: {}", response);
+        } catch (Exception e) {
+            log.error("error: {}", e);
+            response = BackResponseUtil.getBaseResponse(ReturnCodeEnum.CODE_1006.getCode());
+            response.setMessage(e.getMessage());
+        }
+        return response;
+
+    }
+
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ResponseBody
     public BaseResponse delete(@RequestBody UserRequest request) {

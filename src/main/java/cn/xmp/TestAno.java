@@ -56,7 +56,7 @@ public class TestAno {
         Class<User> sysUserClass = User.class;
         User sysUser = new User();
         Class<? extends User> aClass4 = sysUser.getClass();
-        Class<?> aClass5 = Class.forName("cn.xmp.modules.system.entity.SysUser");
+        Class<?> aClass5 = Class.forName("cn.xmp.modules.system.entity.User");
         User sysUser1 = sysUserClass.newInstance();
         System.out.println("sysUser1.getClass() = " + sysUser1.getClass());
         Class<Integer> type = Integer.TYPE;

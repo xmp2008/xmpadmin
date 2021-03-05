@@ -7,6 +7,7 @@ oc-build/
 target/
 app.pid
 hi.conf
+java_pid13196.hprof.analysis/
 
 /src/main/webapp/dist
 data/
@@ -63,6 +64,7 @@ local.properties
 *.ipr
 *.ids
 *.orig
+*.hprof
 ######################
 # Maven
 ######################

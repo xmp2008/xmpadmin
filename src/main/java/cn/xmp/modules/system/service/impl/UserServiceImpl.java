@@ -13,6 +13,7 @@ import cn.xmp.modules.system.mapper.UserMapper;
 import cn.xmp.modules.system.model.request.UserPageParam;
 import cn.xmp.modules.system.service.*;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -64,7 +65,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         BaseResponse baseResponse = null;
         try {
             user.setCreateTime(new Date());
-//            user.setStatus(User.STATUS_VALID);
+            user.setStatus(User.STATUS_VALID);
             user.setAvatar(User.DEFAULT_AVATAR);
             user.setTheme(User.THEME_BLACK);
             user.setIsTab(User.TAB_OPEN);
@@ -165,6 +166,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 baseResponse = BackResponseUtil.getBaseResponse(ReturnCodeEnum.CODE_1002.getCode());
             }
         }
+        //获取用户角色
+
         return baseResponse;
     }
 
@@ -251,5 +254,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
 //        String deptIds = this.userDataPermissionService.findByUserId(String.valueOf(user.getUserId()));
 //        user.setDeptIds(deptIds);
+    }
+
+    @Override
+    public BaseResponse findUserDetailList(User param) {
+        BaseResponse baseResponse;
+        if (null == param) {
+            baseResponse = BackResponseUtil.getBaseResponse(ReturnCodeEnum.CODE_1006.getCode());
+        }
+        List<User> users = this.baseMapper.findUserDetail(param);
+        if (CollectionUtils.isNotEmpty(users)) {
+            baseResponse = BackResponseUtil.getBaseResponse(ReturnCodeEnum.CODE_1000.getCode());
+            baseResponse.setDataInfo(users.get(0));
+        } else {
+            baseResponse = BackResponseUtil.getBaseResponse(ReturnCodeEnum.CODE_1002.getCode());
+        }
+        return baseResponse;
     }
 }

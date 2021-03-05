@@ -32,4 +32,12 @@ public interface IUserService extends IService<User> {
      * @param user 用户
      */
     void doGetUserAuthorizationInfo(User user);
+    /**
+     * 通过用户名查找用户详细信息
+     *
+     * @param user 用户
+     * @return 用户信息
+     */
+    public BaseResponse findUserDetailList(User user);
+
 }

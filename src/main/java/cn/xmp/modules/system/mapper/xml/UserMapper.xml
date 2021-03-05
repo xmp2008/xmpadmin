@@ -22,11 +22,62 @@
         <result column="DEPT_NAME" property="deptName" />
         <result column="ROLE_ID" property="roleId" />
         <result column="ROLE_NAME" property="roleName" />
+        <result column="ROLE_IDS" property="roleIds" />
+        <result column="ROLE_NAMES" property="roleNames" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        USER_ID AS userId, USERNAME AS username, PASSWORD AS password, DEPT_ID AS deptId, EMAIL AS email, MOBILE AS mobile, STATUS AS status, CREATE_TIME AS createTime, MODIFY_TIME AS modifyTime, LAST_LOGIN_TIME AS lastLoginTime, SSEX AS ssex, IS_TAB AS isTab, THEME AS theme, AVATAR AS avatar, DESCRIPTION AS description, DEPT_NAME AS deptName, ROLE_ID AS roleId, ROLE_NAME AS roleName
+        USER_ID AS userId, USERNAME AS username, PASSWORD AS password, DEPT_ID AS deptId, EMAIL AS email, MOBILE AS mobile, STATUS AS status, CREATE_TIME AS createTime, MODIFY_TIME AS modifyTime, LAST_LOGIN_TIME AS lastLoginTime, SSEX AS ssex, IS_TAB AS isTab, THEME AS theme, AVATAR AS avatar, DESCRIPTION AS description, DEPT_NAME AS deptName, ROLE_ID AS roleId, ROLE_NAME AS roleName, ROLE_IDS AS roleIds, ROLE_NAMES AS roleNames
     </sql>
-
+    <select id="findUserDetail" resultMap="BaseResultMap">
+        SELECT
+        u.*,
+        d.DEPT_NAME AS DEPT_NAME,
+        GROUP_CONCAT(r.ROLE_ID) ROLE_IDS,
+        GROUP_CONCAT(r.ROLE_NAME) ROLE_NAMES
+        FROM
+        t_user u
+        LEFT JOIN t_dept d ON (u.DEPT_ID = d.DEPT_ID)
+        LEFT JOIN t_user_role ur ON (u.USER_ID = ur.USER_ID)
+        LEFT JOIN t_role r ON r.ROLE_ID = ur.ROLE_ID
+        WHERE 1 = 1
+        <if test="user.userId != null and user.userId != ''">
+            AND u.USER_ID = #{user.userId}
+        </if>
+        <if test="user.username != null and user.username != ''">
+            AND u.username = #{user.username}
+        </if>
+        <if test="user.deptId != null and user.deptId != ''">
+            AND d.dept_id = #{user.deptId}
+        </if>
+        <if test="user.ssex != null and user.ssex != ''">
+            AND u.ssex = #{user.ssex}
+        </if>
+        <if test="user.status != null and user.status != ''">
+            AND u.status = #{user.status}
+        </if>
+        <if test="user.mobile != null and user.mobile != ''">
+            AND u.mobile = #{user.mobile}
+        </if>
+        <if test="user.createTime != null and user.createTime !=''">
+            And u.create_time &gt; #{user.createTime}
+        </if>
+        <if test="user.createTime!= null and user.createTime !=''">
+            And u.create_time &lt; #{user.createTime}
+        </if>
+        GROUP BY
+        u.username,
+        u.user_id,
+        u.email,
+        u.mobile,
+        u.status,
+        u.create_time,
+        u.ssex,
+        u.dept_id,
+        u.last_login_time,
+        u.modify_time,
+        u.description,
+        u.avatar
+    </select>
 </mapper>

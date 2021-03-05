@@ -21,7 +21,7 @@ import java.util.Set;
  */
 @Data
 @TableName("t_user")
-public class User extends Model<User> {
+public class UserDetail extends Model<UserDetail> {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -149,7 +149,7 @@ public class User extends Model<User> {
     /**
      * 部门名称
      */
-    @TableField(value = "DEPT_NAME", exist = false)
+    @TableField("DEPT_NAME")
     private String deptName;
     /**
      * 角色id
@@ -164,12 +164,12 @@ public class User extends Model<User> {
     /**
      * 角色 ID组
      */
-    @TableField(value = "ROLE_IDS", exist = false)
+    @TableField("ROLE_IDS")
     private String roleIds;
     /**
      * 角色名称组
      */
-    @TableField(value = "ROLE_NAMES", exist = false)
+    @TableField("ROLE_NAMES")
     private String roleNames;
     @TableField(exist = false)
     private Set<String> stringPermissions;
@@ -186,13 +186,4 @@ public class User extends Model<User> {
      */
     @TableField(exist = false)
     private String deptIds;
-
-    public User(Long userId, String username, String ssex) {
-        this.userId = userId;
-        this.username = username;
-        this.ssex = ssex;
-    }
-
-    public User() {
-    }
 }
